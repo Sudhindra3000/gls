@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"log"
 	"os"
 )
@@ -18,7 +19,15 @@ func rootRun(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(curDir)
+
+	files, err := ioutil.ReadDir(curDir)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for _, file := range files {
+		fmt.Println(file.Name())
+	}
 }
 
 func Execute() {
