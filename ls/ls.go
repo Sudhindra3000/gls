@@ -17,6 +17,21 @@ func ListFiles(dirPath string) {
 	listFilesInOrder(entries)
 }
 
+func ListFilesContaining(dirPath string, exp string) {
+	entries, err := os.ReadDir(dirPath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	entries = util.Filter(entries, func(i int) bool { return strings.Contains(entries[i].Name(), exp) })
+	if len(entries) == 0 {
+		fmt.Println("No Files or Directories containing", exp)
+		return
+	}
+
+	listFilesInOrder(entries)
+}
+
 func ListFilesEndingWith(dirPath string, end string) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {

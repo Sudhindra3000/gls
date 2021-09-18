@@ -25,6 +25,14 @@ func rootRun(cmd *cobra.Command, args []string) {
 			log.Fatalln(err)
 		}
 	case 1:
+		if contains, ok := util.Contains(args[0]); ok {
+			dirPath, err = os.Getwd()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			ls.ListFilesContaining(dirPath, contains)
+			return
+		}
 		if end, ok := util.EndingWith(args[0]); ok {
 			dirPath, err = os.Getwd()
 			if err != nil {
