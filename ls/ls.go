@@ -18,43 +18,33 @@ func ListFiles(dirPath string) {
 }
 
 func ListFilesEndingWith(dirPath string, end string) {
-	var correctEntries []os.DirEntry
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	for _, entry := range entries {
-		if strings.HasSuffix(entry.Name(), end) {
-			correctEntries = append(correctEntries, entry)
-		}
-	}
-
-	if len(correctEntries) == 0 {
+	entries = util.Filter(entries, func(i int) bool { return strings.HasSuffix(entries[i].Name(), end) })
+	if len(entries) == 0 {
 		fmt.Println("No Files or Directories ending with", end)
 		return
 	}
-	listFilesInOrder(correctEntries)
+
+	listFilesInOrder(entries)
 }
 
 func ListFilesStartingWith(dirPath string, start string) {
-	var correctEntries []os.DirEntry
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	for _, entry := range entries {
-		if strings.HasPrefix(entry.Name(), start) {
-			correctEntries = append(correctEntries, entry)
-		}
-	}
-
-	if len(correctEntries) == 0 {
+	entries = util.Filter(entries, func(i int) bool { return strings.HasPrefix(entries[i].Name(), start) })
+	if len(entries) == 0 {
 		fmt.Println("No Files or Directories starting with", start)
 		return
 	}
-	listFilesInOrder(correctEntries)
+
+	listFilesInOrder(entries)
 }
 
 func listFilesInOrder(entries []os.DirEntry) {
