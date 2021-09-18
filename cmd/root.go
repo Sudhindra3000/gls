@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"gls/ls"
-	"gls/strutil"
+	"gls/util"
 	"log"
 	"os"
 )
@@ -25,7 +25,7 @@ func rootRun(cmd *cobra.Command, args []string) {
 			log.Fatalln(err)
 		}
 	case 1:
-		if end, ok := strutil.EndingWith(args[0]); ok {
+		if end, ok := util.EndingWith(args[0]); ok {
 			dirPath, err = os.Getwd()
 			if err != nil {
 				log.Fatalln(err)
@@ -33,7 +33,7 @@ func rootRun(cmd *cobra.Command, args []string) {
 			ls.ListFilesEndingWith(dirPath, end)
 			return
 		}
-		if start, ok := strutil.StartingWith(args[0]); ok {
+		if start, ok := util.StartingWith(args[0]); ok {
 			dirPath, err = os.Getwd()
 			if err != nil {
 				log.Fatalln(err)

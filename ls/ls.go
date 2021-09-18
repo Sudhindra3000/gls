@@ -2,8 +2,10 @@ package ls
 
 import (
 	"fmt"
+	"gls/util"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -12,23 +14,19 @@ func ListFiles(dirPath string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	for _, entry := range entries {
-		fmt.Println(entry.Name())
-	}
+	listFilesInOrder(entries)
 }
 
 func ListFilesEndingWith(dirPath string, end string) {
-	var correctEntries []string
+	var correctEntries []os.DirEntry
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	for _, entry := range entries {
-		name := entry.Name()
-		if strings.HasSuffix(name, end) {
-			correctEntries = append(correctEntries, name)
+		if strings.HasSuffix(entry.Name(), end) {
+			correctEntries = append(correctEntries, entry)
 		}
 	}
 
@@ -36,22 +34,19 @@ func ListFilesEndingWith(dirPath string, end string) {
 		fmt.Println("No Files or Directories ending with", end)
 		return
 	}
-	for _, name := range correctEntries {
-		fmt.Println(name)
-	}
+	listFilesInOrder(correctEntries)
 }
 
 func ListFilesStartingWith(dirPath string, start string) {
-	var correctEntries []string
+	var correctEntries []os.DirEntry
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	for _, entry := range entries {
-		name := entry.Name()
-		if strings.HasPrefix(name, start) {
-			correctEntries = append(correctEntries, name)
+		if strings.HasPrefix(entry.Name(), start) {
+			correctEntries = append(correctEntries, entry)
 		}
 	}
 
@@ -59,7 +54,15 @@ func ListFilesStartingWith(dirPath string, start string) {
 		fmt.Println("No Files or Directories starting with", start)
 		return
 	}
-	for _, name := range correctEntries {
-		fmt.Println(name)
+	listFilesInOrder(correctEntries)
+}
+
+func listFilesInOrder(entries []os.DirEntry) {
+	sort.Slice(entries, func(i, j int) bool {
+		return strings.ToLower(entries[i].Name()) < strings.ToLower(entries[j].Name())
+	})
+	dirs, files := util.Partition(entries, func(i int) bool { return entries[i].IsDir() })
+	for _, entry := range append(dirs, files...) {
+		fmt.Println(entry.Name())
 	}
 }
