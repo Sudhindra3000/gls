@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
-	"io/ioutil"
+	"gls/ls"
+	"gls/strutil"
 	"log"
 	"os"
 )
@@ -15,19 +15,38 @@ var rootCmd = &cobra.Command{
 }
 
 func rootRun(cmd *cobra.Command, args []string) {
-	curDir, err := os.Getwd()
-	if err != nil {
-		log.Fatalln(err)
+	var dirPath string
+	var err error
+
+	switch len(args) {
+	case 0:
+		dirPath, err = os.Getwd()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	case 1:
+		if end, ok := strutil.EndingWith(args[0]); ok {
+			dirPath, err = os.Getwd()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			ls.ListFilesEndingWith(dirPath, end)
+			return
+		}
+		if start, ok := strutil.StartingWith(args[0]); ok {
+			dirPath, err = os.Getwd()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			ls.ListFilesStartingWith(dirPath, start)
+			return
+		}
+		dirPath = args[0]
+	default:
+		log.Fatalln("Invalid Args")
 	}
 
-	files, err := ioutil.ReadDir(curDir)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	for _, file := range files {
-		fmt.Println(file.Name())
-	}
+	ls.ListFiles(dirPath)
 }
 
 func Execute() {
@@ -35,6 +54,4 @@ func Execute() {
 }
 
 func init() {
-	// Local Flags
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
