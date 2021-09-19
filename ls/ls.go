@@ -9,15 +9,15 @@ import (
 	"strings"
 )
 
-func ListFiles(dirPath string) {
+func ListFiles(dirPath string, showAll bool) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	listFilesInOrder(entries)
+	listFilesInOrder(entries, showAll)
 }
 
-func ListFilesContaining(dirPath string, exp string) {
+func ListFilesContaining(dirPath string, exp string, showAll bool) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -29,10 +29,10 @@ func ListFilesContaining(dirPath string, exp string) {
 		return
 	}
 
-	listFilesInOrder(entries)
+	listFilesInOrder(entries, showAll)
 }
 
-func ListFilesEndingWith(dirPath string, end string) {
+func ListFilesEndingWith(dirPath string, end string, showAll bool) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -44,10 +44,10 @@ func ListFilesEndingWith(dirPath string, end string) {
 		return
 	}
 
-	listFilesInOrder(entries)
+	listFilesInOrder(entries, showAll)
 }
 
-func ListFilesStartingWith(dirPath string, start string) {
+func ListFilesStartingWith(dirPath string, start string, showAll bool) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -59,15 +59,17 @@ func ListFilesStartingWith(dirPath string, start string) {
 		return
 	}
 
-	listFilesInOrder(entries)
+	listFilesInOrder(entries, showAll)
 }
 
-func listFilesInOrder(entries []os.DirEntry) {
+func listFilesInOrder(entries []os.DirEntry, showAll bool) {
 	sort.Slice(entries, func(i, j int) bool {
 		return strings.ToLower(entries[i].Name()) < strings.ToLower(entries[j].Name())
 	})
 	dirs, files := util.Partition(entries, func(i int) bool { return entries[i].IsDir() })
 	for _, entry := range append(dirs, files...) {
-		fmt.Println(entry.Name())
+		if showAll || !util.HiddenFile(entry.Name()) {
+			fmt.Println(entry.Name())
+		}
 	}
 }

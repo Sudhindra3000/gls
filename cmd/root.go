@@ -14,7 +14,9 @@ var rootCmd = &cobra.Command{
 	Run:   rootRun,
 }
 
-func rootRun(cmd *cobra.Command, args []string) {
+var showAll bool
+
+func rootRun(_ *cobra.Command, args []string) {
 	var dirPath string
 	var err error
 
@@ -30,7 +32,7 @@ func rootRun(cmd *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			ls.ListFilesContaining(dirPath, contains)
+			ls.ListFilesContaining(dirPath, contains, showAll)
 			return
 		}
 		if end, ok := util.EndingWith(args[0]); ok {
@@ -38,7 +40,7 @@ func rootRun(cmd *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			ls.ListFilesEndingWith(dirPath, end)
+			ls.ListFilesEndingWith(dirPath, end, showAll)
 			return
 		}
 		if start, ok := util.StartingWith(args[0]); ok {
@@ -46,7 +48,7 @@ func rootRun(cmd *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			ls.ListFilesStartingWith(dirPath, start)
+			ls.ListFilesStartingWith(dirPath, start, showAll)
 			return
 		}
 		dirPath = args[0]
@@ -54,7 +56,7 @@ func rootRun(cmd *cobra.Command, args []string) {
 		log.Fatalln("Invalid Args")
 	}
 
-	ls.ListFiles(dirPath)
+	ls.ListFiles(dirPath, showAll)
 }
 
 func Execute() {
@@ -62,4 +64,6 @@ func Execute() {
 }
 
 func init() {
+	// Flags
+	rootCmd.Flags().BoolVarP(&showAll, "all", "a", false, "Show all files including hidden files and directories")
 }
