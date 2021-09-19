@@ -2,6 +2,13 @@ package util
 
 import "os"
 
+func Reverse(slc []os.DirEntry) []os.DirEntry {
+	for i, j := 0, len(slc)-1; i < j; i, j = i+1, j-1 {
+		slc[i], slc[j] = slc[j], slc[i]
+	}
+	return slc
+}
+
 func Filter(slc []os.DirEntry, predicate func(i int) bool) (res []os.DirEntry) {
 	for i, v := range slc {
 		if predicate(i) {

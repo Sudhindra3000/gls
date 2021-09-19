@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"gls/ls"
+	"gls/models"
 	"gls/util"
 	"log"
 	"os"
@@ -13,8 +14,7 @@ var rootCmd = &cobra.Command{
 	Short: "golang implementation of the ls command",
 	Run:   rootRun,
 }
-
-var showAll bool
+var flags = models.Flags{}
 
 func rootRun(_ *cobra.Command, args []string) {
 	var dirPath string
@@ -32,7 +32,7 @@ func rootRun(_ *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			ls.ListFilesContaining(dirPath, contains, showAll)
+			ls.ListFilesContaining(dirPath, contains, flags)
 			return
 		}
 		if end, ok := util.EndingWith(args[0]); ok {
@@ -40,7 +40,7 @@ func rootRun(_ *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			ls.ListFilesEndingWith(dirPath, end, showAll)
+			ls.ListFilesEndingWith(dirPath, end, flags)
 			return
 		}
 		if start, ok := util.StartingWith(args[0]); ok {
@@ -48,7 +48,7 @@ func rootRun(_ *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatalln(err)
 			}
-			ls.ListFilesStartingWith(dirPath, start, showAll)
+			ls.ListFilesStartingWith(dirPath, start, flags)
 			return
 		}
 		dirPath = args[0]
@@ -56,7 +56,7 @@ func rootRun(_ *cobra.Command, args []string) {
 		log.Fatalln("Invalid Args")
 	}
 
-	ls.ListFiles(dirPath, showAll)
+	ls.ListFiles(dirPath, flags)
 }
 
 func Execute() {
@@ -65,5 +65,6 @@ func Execute() {
 
 func init() {
 	// Flags
-	rootCmd.Flags().BoolVarP(&showAll, "all", "a", false, "Show all files including hidden files and directories")
+	rootCmd.Flags().BoolVarP(&flags.ShowAll, "all", "a", false, "List all files including hidden files (files with names beginning with a dot)")
+	rootCmd.Flags().BoolVarP(&flags.Reverse, "reverse", "r", false, "List the files in the Reverse of the order that they would otherwise have been listed in")
 }

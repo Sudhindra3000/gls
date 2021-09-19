@@ -2,6 +2,7 @@ package ls
 
 import (
 	"fmt"
+	"gls/models"
 	"gls/util"
 	"log"
 	"os"
@@ -9,15 +10,15 @@ import (
 	"strings"
 )
 
-func ListFiles(dirPath string, showAll bool) {
+func ListFiles(dirPath string, flags models.Flags) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	listFilesInOrder(entries, showAll)
+	listFilesInOrder(entries, flags)
 }
 
-func ListFilesContaining(dirPath string, exp string, showAll bool) {
+func ListFilesContaining(dirPath string, exp string, flags models.Flags) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -29,10 +30,10 @@ func ListFilesContaining(dirPath string, exp string, showAll bool) {
 		return
 	}
 
-	listFilesInOrder(entries, showAll)
+	listFilesInOrder(entries, flags)
 }
 
-func ListFilesEndingWith(dirPath string, end string, showAll bool) {
+func ListFilesEndingWith(dirPath string, end string, flags models.Flags) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -44,10 +45,10 @@ func ListFilesEndingWith(dirPath string, end string, showAll bool) {
 		return
 	}
 
-	listFilesInOrder(entries, showAll)
+	listFilesInOrder(entries, flags)
 }
 
-func ListFilesStartingWith(dirPath string, start string, showAll bool) {
+func ListFilesStartingWith(dirPath string, start string, flags models.Flags) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatalln(err)
@@ -59,16 +60,20 @@ func ListFilesStartingWith(dirPath string, start string, showAll bool) {
 		return
 	}
 
-	listFilesInOrder(entries, showAll)
+	listFilesInOrder(entries, flags)
 }
 
-func listFilesInOrder(entries []os.DirEntry, showAll bool) {
+func listFilesInOrder(entries []os.DirEntry, flags models.Flags) {
 	sort.Slice(entries, func(i, j int) bool {
 		return strings.ToLower(entries[i].Name()) < strings.ToLower(entries[j].Name())
 	})
 	dirs, files := util.Partition(entries, func(i int) bool { return entries[i].IsDir() })
-	for _, entry := range append(dirs, files...) {
-		if showAll || !util.HiddenFile(entry.Name()) {
+	final := append(dirs, files...)
+	if flags.Reverse {
+		final = util.Reverse(final)
+	}
+	for _, entry := range final {
+		if flags.ShowAll || !util.HiddenFile(entry.Name()) {
 			fmt.Println(entry.Name())
 		}
 	}
