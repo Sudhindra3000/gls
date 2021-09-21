@@ -37,5 +37,5 @@ Accepts file patterns as arguments to list files based on patterns in names
 
 ### Supported Patterns
 - `*pat*` (files with names containing given pattern)
-- `*pat` (files with names ending with given pattern)
-- `pat*` (files with names starting with given pattern)
+- `*pat`  (files with names ending with given pattern)
+- `pat*`  (files with names starting with given pattern)
